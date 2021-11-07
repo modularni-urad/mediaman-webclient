@@ -1,0 +1,39 @@
+export default [{
+  name: 'filename',
+  fieldcomponent: true,
+  sortable: true
+}, {
+  name: 'file',
+  component: 'dyn-fileinput',
+  label: 'soubor'
+}, {
+  name: 'nazev',
+  component: 'dyn-input',
+  fieldcomponent: true,
+  label: 'název',
+  rules: 'required',
+  type: 'string',
+  sortable: true
+}, {
+  name: 'tags',
+  component: 'dyn-input',
+  label: 'tagy',
+  fieldcomponent: true,
+  rules: 'required',
+  type: 'string'
+}, {
+  name: 'popis',
+  component: 'dyn-textarea',
+  label: 'popis',
+  type: 'string'
+}, {
+  name: 'ctype',
+  label: 'typ',
+  fieldcomponent: true,
+  sortable: true
+}, {
+  name: 'size',
+  label: 'velikost',
+  fieldcomponent: true,
+  sortable: true
+}]

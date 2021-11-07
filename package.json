@@ -1,0 +1,23 @@
+{
+  "name": "modularni-urad-mediaman-webclient",
+  "title": "Media manager webclient",
+  "description": "web based",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=debug node -r esm --inspect dev/server.js"
+  },
+  "author": {
+    "name": "Vaclav Klecanda <vencax77@gmail.com>"
+  },
+  "license": "BSD",
+  "devDependencies": {
+    "bootstrap-vue-dynamic-form": "github:vencax/bootstrap-vue-dynamic-form",
+    "browser-sync": "^2.26.14",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "knex": "^0.21.16",
+    "http-proxy-middleware": "^2.0.1",
+    "modularni-urad-admin-components": "github:modularni-urad/admin-components"
+  }
+}

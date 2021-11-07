@@ -1,0 +1,5 @@
+cdn: /cdn
+cdnapi: /api/cdn
+apps:
+  - module: ./index.js
+    url: '/api/mediaman'

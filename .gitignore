@@ -1,0 +1,14 @@
+*.min.js
+*.sqlite
+.*
+./index.html
+.git
+.gitignore
+build/
+dist/bundle.js
+js/main.js
+node_modules/
+test/for_components_debug/node_modules
+npm-debug.log
+vars.env
+package-lock.json
