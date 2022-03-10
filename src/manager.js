@@ -6,7 +6,7 @@ const FileActions = {
       this.$router.replace({ query })
     },
     getLink: function () {
-      const link = this.$store.getters.mediaUrl(this.row.filename)
+      const link = this.$store.state.cfg.cdn + this.row.filename
       this.$copyText(link).then(() => {
         this.$store.dispatch('toast', { message: `odkaz zkopírován do schránky` })
       }).catch(() => alert(link))
