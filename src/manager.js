@@ -4,6 +4,12 @@ const FileActions = {
     doEdit: function () {
       const query = Object.assign({}, this.query, { _detail: this.row.filename })
       this.$router.replace({ query })
+    },
+    getLink: function () {
+      const link = this.$store.getters.mediaUrl(this.row.filename)
+      this.$copyText(link).then(() => {
+        this.$store.dispatch('toast', { message: `odkaz zkopírován do schránky` })
+      }).catch(() => alert(link))
     }
   },
   computed: {
@@ -21,9 +27,12 @@ const FileActions = {
       :src="$store.getters.mediaUrl(row.filename, 'w=150')" 
     />
     
-    <b-button v-if="muzuUpravit" size="sm" variant="primary" @click="doEdit(row)">
+    <b-button v-if="muzuUpravit" size="sm" variant="primary" @click="doEdit">
       <i class="fas fa-edit"></i> upravit
-    </b-button>        
+    </b-button>
+    <b-button size="sm" variant="secondary" @click="getLink">
+      <i class="fas fa-link"></i> odkaz
+    </b-button>
   </td>
   `
 }

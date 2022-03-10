@@ -1,5 +1,5 @@
 cdn: /cdn
-cdnapi: /api/cdn
+cdnapi: https://modurad.otevrenamesta.cz/cdn
 apps:
   - module: ./index.js
-    url: '/api/mediaman'
+    url: 'https://modurad.otevrenamesta.cz/omstredni/mediaman'

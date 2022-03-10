@@ -47,7 +47,7 @@ export default (router, cfg) => (new Vuex.Store({
   },
   actions: {
     toast: function (ctx, opts) {
-      // Vue.$toast.open(opts)
+      console.log('toast', JSON.stringify(opts))
     },
     onerror: function (ctx, err) {
       console.error(err)
