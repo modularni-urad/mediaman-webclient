@@ -3,9 +3,12 @@ import formconfig from './src/formconfig.js'
 import { loadAsBase64 } from './src/fileForm.js'
 
 const ROUTENAME = 'medias'
+const ADMIN_GROUP = 'mediaman'
 
 export function createMenu (user) {
-  return { label: 'media', to: { name: ROUTENAME } }
+  return user.groups.indexOf(ADMIN_GROUP) >= 0
+    ? { label: 'media', to: { name: ROUTENAME } }
+    : null
 }
 
 export async function setupRoutes (routes, path, cfg, initConfig) {
