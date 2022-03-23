@@ -1,53 +1,50 @@
-const FileActions = {
-  props: ['query', 'cfg', 'row'],
-  methods: {
-    doEdit: function () {
-      const query = Object.assign({}, this.query, { _detail: this.row.filename })
-      this.$router.replace({ query })
-    },
-    getLink: function () {
-      const link = this.$store.state.cfg.cdn + this.row.filename
-      this.$copyText(link).then(() => {
-        this.$store.dispatch('toast', { message: `odkaz zkopírován do schránky` })
-      }).catch(() => alert(link))
-    }
-  },
-  computed: {
-    isImage: function () {
-      return this.row.ctype.indexOf('image') >= 0
-    },
-    muzuUpravit: function () {
-      // return this.$store.getters.isMember(this.row.group)
-      return true
-    }
-  },
-  template: `
-  <td>
-    <img v-if="isImage" style="display: inline-block;" 
-      :src="$store.getters.mediaUrl(row.filename, 'w=150')" 
-    />
-    
-    <b-button v-if="muzuUpravit" size="sm" variant="primary" @click="doEdit">
-      <i class="fas fa-edit"></i> upravit
-    </b-button>
-    <b-button size="sm" variant="secondary" @click="getLink">
-      <i class="fas fa-link"></i> odkaz
-    </b-button>
-  </td>
-  `
-}
+import FolderList from './folderlist.js'
+import FileActions from './fileactions.js'
 
 export default {
   props: ['cfg', 'query'],
-  components: { FileActions },
+  components: { FileActions, FolderList },
+  computed: {
+    breadcrumsItems: function () {
+      return this.query.path ? this.query.path.split('/') : []
+    }
+  },
+  methods: {
+    onFolderClick: function (i) {
+      const path = this.query.path 
+        ? this.query.path + '/' + i.name
+        : i.name 
+      const query = Object.assign({}, this.query, { path })
+      this.$router.replace({ query })
+    },
+    goTo: function (i) {
+      const idx = this.breadcrumsItems.indexOf(i)
+      const path = this.breadcrumsItems.slice(0, idx + 1).join('/')
+      const query = Object.assign({}, this.query, { path })
+      this.$router.replace({ query })
+    }
+  },
   template: `
   <ACListView :query="query" :cfg="cfg">
 
     <template v-slot:breadcrumb="{ cfg }">
-      <b-breadcrumb-item active>media</b-breadcrumb-item>
+      <b-breadcrumb-item :active="breadcrumsItems.length === 0" @click="goTo()">
+        media
+      </b-breadcrumb-item>
+      <b-breadcrumb-item 
+        v-for="i,idx in breadcrumsItems" :key="i" 
+        @click="goTo(i)"
+        :active="idx === breadcrumsItems.length - 1"
+      >
+        {{ i }}
+      </b-breadcrumb-item>
     </template>
 
-    <template v-slot:tbody="{ items, fields }">
+    <template v-slot:middle="{ cfg }">
+      <FolderList style="clear: both;" :cfg="cfg" :query="query" :onSelect="onFolderClick" />
+    </template>
+
+    <template v-slot:tbody="{ items, fields, doEdit }">
 
       <tr v-for="row,rowidx in items" :key="rowidx">
         <td>{{ row.filename }}</td>
@@ -55,7 +52,7 @@ export default {
         <td>{{ row.tags }}</td>
         <td>{{ row.ctype }}</td>
         <td>{{ row.size }}</td>        
-        <FileActions key="actions" :query="query" :row="row" :cfg="cfg" />
+        <FileActions key="actions" :query="query" :row="row" :cfg="cfg" :doEdit="doEdit" />
       </tr>
 
     </template>

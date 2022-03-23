@@ -1,11 +1,8 @@
 export default [{
   name: 'filename',
+  label: 'filename',
   fieldcomponent: true,
   sortable: true
-}, {
-  name: 'file',
-  component: 'dyn-fileinput',
-  label: 'soubor'
 }, {
   name: 'nazev',
   component: 'dyn-input',
@@ -26,14 +23,4 @@ export default [{
   component: 'dyn-textarea',
   label: 'popis',
   type: 'string'
-}, {
-  name: 'ctype',
-  label: 'typ',
-  fieldcomponent: true,
-  sortable: true
-}, {
-  name: 'size',
-  label: 'velikost',
-  fieldcomponent: true,
-  sortable: true
 }]

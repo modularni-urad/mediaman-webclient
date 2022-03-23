@@ -1,14 +1,22 @@
 import MediaManager from './src/manager.js'
+import AclManager from './src/acl_manager.js'
 import formconfig from './src/formconfig.js'
-import { loadAsBase64 } from './src/fileForm.js'
+import acl_formconfig from './src/acl_formconfig.js'
 
 const ROUTENAME = 'medias'
 const ADMIN_GROUP = 'mediaman'
+const ACL_ROUTENAME = 'mediaman_acladmin'
+const ACL_GROUP = 'acl_manager'
 
 export function createMenu (user) {
-  return user.groups.indexOf(ADMIN_GROUP) >= 0
-    ? { label: 'media', to: { name: ROUTENAME } }
-    : null
+  const items = []
+  if (user.groups.indexOf(ADMIN_GROUP) >= 0) {
+    items.push({ label: 'media', to: { name: ROUTENAME } })
+  }
+  if (user.groups.indexOf(ACL_GROUP) >= 0) {
+    items.push({ label: 'acl admin', to: { name: ACL_ROUTENAME } })
+  }
+  return items.length > 0 ? items : null
 }
 
 export async function setupRoutes (routes, path, cfg, initConfig) {
@@ -16,30 +24,20 @@ export async function setupRoutes (routes, path, cfg, initConfig) {
   Object.assign(cfg, { 
     conf: formconfig,
     default_sort: 'filename:asc',
-    getLoadUrl: function (itemId, self) {
-      return `${self.cfg.url}?filter=${JSON.stringify({ filename: itemId })}`
-    },
-    getSaveUrl: (currItem, self) => {
-      return currItem ? `${self.cfg.url}${self.query._detail}` : self.cfg.url
-    },
-    prepareData: function (data) {
-      const prepared = _.omit(data, 'file')
-      if (data.file) {        
-        Object.assign(prepared, {
-          ctype: data.file.type,
-          size: data.file.size,
-          filename: data.file.name
-        })
+    getListUrl: function (self, params) {
+      if (self.query.path) {
+        const filter = { filename: { like: `${self.query.path}%` } }
+        params.filter = params.filter 
+          ? Object.assign(params.filter, filter)
+          : filter
       }
-      return prepared
+      return self.cfg.url
     },
-    finishSave: async function (data, result, self) {
-      const content = await loadAsBase64(data.file)
-      await self.$store.dispatch('send', { 
-        method: 'post', 
-        url: `${self.cfg.upload_url}/${result[0].filename}`,
-        data: { content }
-      })
+    getLoadUrl: function (item, self) {
+      return `${self.cfg.url}?filter=${JSON.stringify({ filename: item.filename })}`
+    },
+    getSaveUrl: (item, self) => {
+      return item ? `${self.cfg.url}/${item.filename}` : self.cfg.url
     }
   })
 
@@ -51,6 +49,22 @@ export async function setupRoutes (routes, path, cfg, initConfig) {
     component: MediaManager, 
     props: route => {
       return { query: route.query, cfg }
+    }
+  })
+
+  const aclCfg = {
+    url: cfg.url + '/acl',
+    conf: acl_formconfig,
+    default_sort: 'uid:asc',
+  }
+  await initConfig(aclCfg)
+
+  routes.push({ 
+    path: path + 'acl', 
+    name: ACL_ROUTENAME, 
+    component: AclManager, 
+    props: route => {
+      return { query: route.query, aclCfg }
     }
   })
 }
