@@ -19,7 +19,7 @@ export default {
   },
   template: `
   <td>
-    <img v-if="isImage" style="display: inline-block;" 
+    <img v-if="isImage" style="display: inline-block; width: 150px;" 
       :src="$store.getters.mediaUrl(row.filename, 'w=150')" 
     />
     

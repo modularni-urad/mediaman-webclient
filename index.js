@@ -55,7 +55,7 @@ export async function setupRoutes (routes, path, cfg, initConfig) {
   const aclCfg = {
     url: cfg.url + '/acl',
     conf: acl_formconfig,
-    default_sort: 'uid:asc',
+    default_sort: 'uid:asc'
   }
   await initConfig(aclCfg)
 
@@ -64,7 +64,7 @@ export async function setupRoutes (routes, path, cfg, initConfig) {
     name: ACL_ROUTENAME, 
     component: AclManager, 
     props: route => {
-      return { query: route.query, aclCfg }
+      return { query: route.query, cfg: aclCfg }
     }
   })
 }

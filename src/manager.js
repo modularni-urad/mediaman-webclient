@@ -1,9 +1,10 @@
 import FolderList from './folderlist.js'
 import FileActions from './fileactions.js'
+import AddButton from './add_button.js'
 
 export default {
   props: ['cfg', 'query'],
-  components: { FileActions, FolderList },
+  components: { FileActions, FolderList, AddButton },
   computed: {
     breadcrumsItems: function () {
       return this.query.path ? this.query.path.split('/') : []
@@ -38,6 +39,10 @@ export default {
       >
         {{ i }}
       </b-breadcrumb-item>
+    </template>
+
+    <template v-slot:rightcontrols="{ cfg }">
+      <AddButton :cfg="cfg" :query="query" />
     </template>
 
     <template v-slot:middle="{ cfg }">

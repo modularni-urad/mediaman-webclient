@@ -5,7 +5,7 @@ export default {
   <ACListView :query="query" :cfg="cfg">
 
     <template v-slot:breadcrumb="{ cfg }">
-      <b-breadcrumb-item active>media</b-breadcrumb-item>
+      <b-breadcrumb-item active>ACLs</b-breadcrumb-item>
     </template>
 
   </ACListView>
