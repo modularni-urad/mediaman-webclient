@@ -12,8 +12,9 @@ export default {
     uploadFiles: async function (event) {
       for(var i = 0; i < event.target.files.length; i++) {
         const f = event.target.files[i]
-        const filename = this.subpath ? 
-          `${this.subpath.replace(/^\//, '').replace(/\/$/, '')}/${f.name}` 
+        const subpath = `${this.query.path}/${this.subpath}`.replace(/\/\//, '/')
+        const filename = subpath ? 
+          `${subpath.replace(/^\//, '').replace(/\/$/, '')}/${f.name}` 
           : f.name
         const upload = {filename, size: 0, progress: 0, status: '' }
         uploadFile(f, upload, filename, this.cfg, this)

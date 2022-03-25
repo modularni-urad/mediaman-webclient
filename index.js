@@ -4,9 +4,9 @@ import formconfig from './src/formconfig.js'
 import acl_formconfig from './src/acl_formconfig.js'
 
 const ROUTENAME = 'medias'
-const ADMIN_GROUP = 'mediaman'
+const ADMIN_GROUP = 'media_mans'
 const ACL_ROUTENAME = 'mediaman_acladmin'
-const ACL_GROUP = 'acl_manager'
+const ACL_GROUP = 'acl_mans'
 
 export function createMenu (user) {
   const items = []
@@ -24,6 +24,7 @@ export async function setupRoutes (routes, path, cfg, initConfig) {
   Object.assign(cfg, { 
     conf: formconfig,
     default_sort: 'filename:asc',
+    idattr: 'filename',
     getListUrl: function (self, params) {
       if (self.query.path) {
         const filter = { filename: { like: `${self.query.path}%` } }
@@ -32,12 +33,6 @@ export async function setupRoutes (routes, path, cfg, initConfig) {
           : filter
       }
       return self.cfg.url
-    },
-    getLoadUrl: function (item, self) {
-      return `${self.cfg.url}?filter=${JSON.stringify({ filename: item.filename })}`
-    },
-    getSaveUrl: (item, self) => {
-      return item ? `${self.cfg.url}/${item.filename}` : self.cfg.url
     }
   })
 
@@ -55,6 +50,7 @@ export async function setupRoutes (routes, path, cfg, initConfig) {
   const aclCfg = {
     url: cfg.url + '/acl',
     conf: acl_formconfig,
+    idattr: 'uid',
     default_sort: 'uid:asc'
   }
   await initConfig(aclCfg)

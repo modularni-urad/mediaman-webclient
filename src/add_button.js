@@ -22,7 +22,7 @@ export default {
     <i class="fas fa-plus"></i> nahrát
     <b-modal @hidden="onClose" v-model="opened" size="xl" 
       title="nahrát soubory" hide-footer>
-      <UploadForm :cfg="cfg" />
+      <UploadForm :cfg="cfg" :query="query" />
     </b-modal>
   </b-button>
   `
