@@ -27,17 +27,14 @@ export async function uploadFile (fileObject, uploadItem, filename, cfg, self) {
       uploadItem.progress = (bytesUploaded / bytesTotal * 100).toFixed(2)
     },
     onSuccess: async function () {
-      const fileUrl = `${cfg.storageurl}${tokenReq.data.path}/${filename}`
-      const dataReq = await axios.head(fileUrl)
       self.$store.dispatch('send', { 
         method: 'post', 
         url: cfg.url,
-        data: { 
-          filename, 
-          nazev: fileObject.name, 
-          ctype: dataReq.headers['content-type'], 
-          size: dataReq.headers['content-length'] 
-        }
+        data: { filename, nazev: fileObject.name }
+      })
+      self.$store.dispatch('toast', {
+        message: `soubor nahrán: ${fileObject.name}`,
+        type: 'success'
       })
       uploadItem.status = 'done'
     }
