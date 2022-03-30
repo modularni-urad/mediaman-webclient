@@ -13,12 +13,11 @@ export async function uploadFile (fileObject, uploadItem, filename, cfg, self) {
     status: 'inprogress'
   })
 
-  const tenant = cfg.url.split('/').slice(-2)[0]
   var options = {
     endpoint: cfg.uploadurl,
     metadata: {
-      filename: `/${tenant}/${filename}`,
-      Bearer: tokenReq.data
+      filename: `${tokenReq.data.path}/${filename}`,
+      Bearer: tokenReq.data.token
     },
     uploadSize: fileObject.size,
     onError (error) {
@@ -28,7 +27,8 @@ export async function uploadFile (fileObject, uploadItem, filename, cfg, self) {
       uploadItem.progress = (bytesUploaded / bytesTotal * 100).toFixed(2)
     },
     onSuccess: async function () {
-      const dataReq = await axios.head(`${cfg.storageurl}/${tenant}/${filename}`)
+      const fileUrl = `${cfg.storageurl}${tokenReq.data.path}/${filename}`
+      const dataReq = await axios.head(fileUrl)
       self.$store.dispatch('send', { 
         method: 'post', 
         url: cfg.url,
