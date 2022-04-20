@@ -13,11 +13,27 @@ export default {
       for(var i = 0; i < event.target.files.length; i++) {
         const f = event.target.files[i]
         const subpath = `${this.query.path}/${this.subpath}`.replace(/\/\//, '/')
-        const filename = subpath ? 
+        const filename = (this.query.path || this.subpath) ? 
           `${subpath.replace(/^\//, '').replace(/\/$/, '')}/${f.name}` 
           : f.name
         const upload = {filename, size: 0, progress: 0, status: '' }
         uploadFile(f, upload, filename, this.cfg, this)
+          .then(filename => {
+            return this.$store.dispatch('send', { 
+              method: 'post', 
+              url: this.cfg.url,
+              data: { filename, nazev: f.name }
+            })
+          })
+          .then(res => {
+            this.$store.dispatch('toast', {
+              message: `soubor nahrán: ${f.name}`,
+              type: 'success'
+            })
+          })
+          .catch(err => {
+            this.$store.dispatch('toast', { message: err.toString(), type: 'error' })
+          })
         this.files.push(upload)
       }
     }
