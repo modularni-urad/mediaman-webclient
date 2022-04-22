@@ -1,5 +1,11 @@
-cdn: /cdn
-cdnapi: https://modurad.otevrenamesta.cz/cdn
+cdn: https://files.vxk.cz/omstredni/
+cdnapi: http://mutabor.vxk.cz/cdn
 apps:
   - module: ./index.js
-    url: 'https://modurad.otevrenamesta.cz/omstredni/mediaman'
+    url: https://dev.modurad.otevrenamesta.cz/omstredni/mediaman
+    uploadurl: https://upload.vxk.cz/
+    storageurl: https://files.vxk.cz
+
+user:
+  username: vencax
+  password: heslo

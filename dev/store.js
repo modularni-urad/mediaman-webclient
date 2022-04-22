@@ -1,17 +1,10 @@
 /* global Vue, Vuex, localStorage, API, axios, _ */
 
-const KEY = '_opencomm_user_'
-
-function _loadUser() {
-  const u = localStorage.getItem(KEY)
-  const user = u ? JSON.parse(u) : null
-  return user
-}
 const isVector = (url) => url.match(/.*.svg$/)
 
 export default (router, cfg) => (new Vuex.Store({
   state: {
-    user: _loadUser(),
+    user: null,
     router: router,
     cfg
   },
@@ -41,11 +34,16 @@ export default (router, cfg) => (new Vuex.Store({
   },
   mutations: {
     profile: (state, profile) => {
-      localStorage.setItem(KEY, JSON.stringify(profile))
       state.user = profile
     }
   },
   actions: {
+    login: function (ctx, credentials) {
+      const url = 'https://dev.modurad.otevrenamesta.cz/omstredni/auth/login/omesta?token=1'
+      axios.post(url, credentials).then(res => {
+        this.commit('profile', res.data)
+      }).catch(err => this.dispatch('onerror', err))
+    },
     toast: function (ctx, opts) {
       console.log('toast', JSON.stringify(opts))
     },
@@ -53,8 +51,8 @@ export default (router, cfg) => (new Vuex.Store({
       console.error(err)
     },
     send: function (ctx, opts) {
-      Object.assign(opts, {  // for debug only
-        headers: { 'Authorization': `Bearer bjbjbj`}
+      ctx.state.user && Object.assign(opts, {  // for debug only
+        headers: { 'Authorization': `Bearer ${ctx.state.user.token}`}
       })
       return axios(opts)
     }

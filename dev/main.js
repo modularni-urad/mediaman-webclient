@@ -34,6 +34,7 @@ async function doInit () {
     routes: routes
   })
   const store = Store(router, settings)
+  store.dispatch('login', settings.user)
 
   new Vue({
     router,
