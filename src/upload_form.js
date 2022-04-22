@@ -1,4 +1,4 @@
-import {uploadFile} from './utils.js'
+import { uploadFile, alreadyExists } from './utils.js'
 
 export default {
   data: () => {
@@ -16,25 +16,32 @@ export default {
         const filename = (this.query.path || this.subpath) ? 
           `${subpath.replace(/^\//, '').replace(/\/$/, '')}/${f.name}` 
           : f.name
-        const upload = {filename, size: 0, progress: 0, status: '' }
-        uploadFile(f, upload, filename, this.cfg, this)
-          .then(filename => {
-            return this.$store.dispatch('send', { 
-              method: 'post', 
-              url: this.cfg.url,
-              data: { filename, nazev: f.name }
-            })
+        try {
+          const tokenReq = await this.$store.dispatch('send', { 
+            method: 'get', 
+            url: this.cfg.url + '/acl/token' 
           })
-          .then(res => {
-            this.$store.dispatch('toast', {
-              message: `soubor nahrán: ${f.name}`,
-              type: 'success'
-            })
+          const finalFilename = `${tokenReq.data.path}/${filename}`
+          const exists = await alreadyExists(finalFilename, this.cfg.storageurl)
+          if (exists) {
+            const m = `${filename}: soubor již existuje, použijte tlačítko "přepsat"`
+            throw new Error(m)
+          }
+          const upload = {filename, size: 0, progress: 0, status: '' }
+          this.files.push(upload)
+          await uploadFile(f, upload, finalFilename, tokenReq.data.token, this.cfg.uploadurl)
+          await this.$store.dispatch('send', { 
+            method: 'post', 
+            url: this.cfg.url,
+            data: { filename, nazev: f.name }
           })
-          .catch(err => {
-            this.$store.dispatch('toast', { message: err.toString(), type: 'error' })
+          this.$store.dispatch('toast', {
+            message: `soubor nahrán: ${f.name}`,
+            type: 'success'
           })
-        this.files.push(upload)
+        } catch (err) {
+          this.$store.dispatch('onerror', { err })
+        }
       }
     }
   },

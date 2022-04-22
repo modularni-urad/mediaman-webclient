@@ -3,7 +3,8 @@ import {uploadFile} from './utils.js'
 export default {
   data: () => {
     return {
-      opened: false
+      opened: false,
+      upload: null
     }
   },
   props: ['query', 'cfg', 'row', 'doEdit'],
@@ -20,14 +21,19 @@ export default {
     uploadFiles: async function (event) {
       const f = event.target.files[0]
       const filename = this.row.filename
-      const upload = {filename, size: 0, progress: 0, status: '' }
+      this.upload = {filename, size: 0, progress: 0, status: '' }
       try {
-        await uploadFile(f, upload, filename, this.cfg, this, true)
-        await this.$store.dispatch('send', { 
-          method: 'put', 
-          url: `${this.cfg.url}/${filename}`,
-          data: { filename }
+        const tokenReq = await this.$store.dispatch('send', { 
+          method: 'get', 
+          url: this.cfg.url + '/acl/token' 
         })
+        const finalFilename = `${tokenReq.data.path}/${filename}`
+        await uploadFile(f, this.upload, finalFilename, tokenReq.data.token, this.cfg.uploadurl)
+        // await this.$store.dispatch('send', { 
+        //   method: 'put', 
+        //   url: `${this.cfg.url}/${filename}`,
+        //   data: { size: f.size }
+        // })
         this.$store.dispatch('toast', { message: `soubor nahrán`, type: 'success' })
         this.opened = false
         this.$parent.fetchData()
@@ -63,6 +69,9 @@ export default {
 
     <b-modal v-model="opened" size="xl" title="nahrát soubor" hide-footer>
       <input type="file" @change="uploadFiles" />
+      <div v-if="upload !== null">
+        <input type="range" :value="upload.progress" min="0" max="100" disabled> {{ upload.progress }}%
+      </div>
     </b-modal>
   </td>
   `
