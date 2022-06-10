@@ -1,4 +1,5 @@
 import { uploadFile, alreadyExists } from './utils.js'
+const fileRegex = /^[a-zA-Z0-9_-]+$/
 
 export default {
   data: () => {
@@ -10,12 +11,19 @@ export default {
   props: ['cfg', 'query'],
   methods: {
     uploadFiles: async function (event) {
+      if (this.subpath && !this.subpath.match(fileRegex)) {
+        return alert('v podsložce nesmí být diakritika ani mezery')
+      }
       for(var i = 0; i < event.target.files.length; i++) {
         const f = event.target.files[i]
         const subpath = `${this.query.path}/${this.subpath}`.replace(/\/\//, '/')
+        const fnameReq = await this.$store.dispatch('send', { 
+          method: 'get', 
+          url: this.cfg.url + '/filename/' + f.name
+        })
         const filename = (this.query.path || this.subpath) ? 
-          `${subpath.replace(/^\//, '').replace(/\/$/, '')}/${f.name}` 
-          : f.name
+          `${subpath.replace(/^\//, '').replace(/\/$/, '')}/${fnameReq.data}` 
+          : fnameReq.data
         try {
           const tokenReq = await this.$store.dispatch('send', { 
             method: 'get', 
