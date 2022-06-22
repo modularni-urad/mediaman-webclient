@@ -1,5 +1,12 @@
 import { uploadFile, alreadyExists } from './utils.js'
 const fileRegex = /^[a-zA-Z0-9_-]+$/
+function _rigthSubpath (sp) {
+  let ok = true
+  sp.split('/').map(i => {
+    if (!i.match(fileRegex)) ok = false
+  })
+  return ok
+}
 
 export default {
   data: () => {
@@ -11,7 +18,7 @@ export default {
   props: ['cfg', 'query'],
   methods: {
     uploadFiles: async function (event) {
-      if (this.subpath && !this.subpath.match(fileRegex)) {
+      if (this.subpath && !_rigthSubpath(this.subpath)) {
         return alert('v podsložce nesmí být diakritika ani mezery')
       }
       for(var i = 0; i < event.target.files.length; i++) {
